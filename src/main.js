@@ -68,7 +68,7 @@ let noTarget = false;
 let skipTitle = false;
 let allowEnemySpawning = true;
 let pauseGameTimer = false;
-let showVisionRays = true;
+let showVisionRays = false;
 let pickRandomLevel = false;
 let canPause = true;
 
