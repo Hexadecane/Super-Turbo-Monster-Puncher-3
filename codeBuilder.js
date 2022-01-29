@@ -1,6 +1,5 @@
 // This takes all the files in the src directory and builds them 
-// into the index.js file in the dist directory. 
-// Has an option for code minification.
+// into the index.js file in the dist directory.
 
 const fs = require('fs');
 const path = require('path');
@@ -49,7 +48,7 @@ function fetchjsFiles(dir) {
   return res;
 }
 
-function runCodeBuilder(jsFiles, haveSeparators=true, minify=false) {
+function runCodeBuilder(jsFiles, haveSeparators=true) {
   // Exactly what it says on the tin. Runs the code builder.
   let concatedScripts = [];
   let output = [];
@@ -58,21 +57,16 @@ function runCodeBuilder(jsFiles, haveSeparators=true, minify=false) {
     // Prevents the same script from being concatenated twice.
     if (concatedScripts.includes(s) == false) {
       concatedScripts.push(s);
-      if (minify) {
-        output.push(fs.readFileSync(s, 'utf8'));
+      let arg;
+      if (haveSeparators) {
+        let start = (`//- ${s} -`).padEnd(79, '/');
+        let end = '/'.repeat(79);
+        arg = `${start}\n\n${fs.readFileSync(s, 'utf8')}\n\n${end}`;
       }
       else {
-        let arg;
-        if (haveSeparators) {
-          let start = (`//- ${s} -`).padEnd(79, '/');
-          let end = '/'.repeat(79);
-          arg = `${start}\n\n${fs.readFileSync(s, 'utf8')}\n\n${end}`;
-        }
-        else {
-          arg = fs.readFileSync(s, 'utf8');
-        }
-        output.push(arg);
+        arg = fs.readFileSync(s, 'utf8');
       }
+      output.push(arg);
     }
   }
   
@@ -109,23 +103,6 @@ function runCodeBuilder(jsFiles, haveSeparators=true, minify=false) {
   fs.writeFileSync("dist/index.js", strict + output.join('\n\n\n'));
   console.log('File saved successfully!\n');
   
-  if (minify) {
-    console.log('Minifying file code...\n');
-    let compressor = require('node-minify');
-    // Using Google Closure Compiler:
-    let compressorArgs = {
-      compressor: 'gcc',
-      input: 'dist/index.js',
-      output: 'dist/index.js',
-      callback: function(err, min) {
-        if (err) console.log('Error encountered.');
-        else {
-          console.log('File minification completed successfully!\n');
-        }
-      },
-    };
-    compressor.minify(compressorArgs);
-  }
 }
 
-runCodeBuilder(fetchjsFiles('./src'), haveSeparators=false, minify=false);
+runCodeBuilder(fetchjsFiles('./src'), haveSeparators=false);
