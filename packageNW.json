@@ -1,0 +1,11 @@
+{
+  "name": "stmp3",
+  "main": "root/dist/index.html",
+  "window": {
+    "title": "Super Turbo Monster Puncher 3",
+    "toolbar": false,
+    "resizable": false,
+    "width": 960,
+    "height": 720
+  }
+}
